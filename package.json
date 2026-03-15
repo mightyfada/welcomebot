@@ -1,0 +1,14 @@
+{
+  "name": "selfbot-keyword-monitor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.0.0",
+    "discord.js-selfbot-v13": "^3.3.2",
+    "dotenv": "^16.0.0",
+    "debug": "^4.3.4"
+  }
+}
