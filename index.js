@@ -42,17 +42,32 @@ selfbot.on("guildMemberAdd", async (member) => {
   if (CONFIG.memberChannelId) {
     try {
       const memberChannel = await selfbot.channels.fetch(CONFIG.memberChannelId);
-      if (memberChannel) await memberChannel.send(alertText);
+      if (memberChannel) {
+        await memberChannel.send(alertText);
+      }
     } catch (err) {
       console.log("Member channel error:", err.message);
     }
   }
 
-  // Add to DM queue
+  // Add to DM queue with callback to post status to channel
   dmQueue.push({
     userId: member.user.id,
     username: member.user.username,
     serverName: member.guild.name,
+    onResult: async (success) => {
+      if (CONFIG.memberChannelId) {
+        try {
+          const memberChannel = await selfbot.channels.fetch(CONFIG.memberChannelId);
+          if (memberChannel) {
+            const statusMsg = success
+              ? `✅ Welcome DM sent to **${member.user.username}**`
+              : `⚠️ Could not DM **${member.user.username}** — DMs disabled`;
+            await memberChannel.send(statusMsg + "\n─────────────────────────");
+          }
+        } catch {}
+      }
+    }
   });
   console.log(`📥 Added ${member.user.tag} to DM queue`);
 });
@@ -77,22 +92,10 @@ async function processQueue() {
       `We hope you have a great experience! 🙏`
     );
     console.log(`✅ Welcome DM sent to ${item.username} from ${item.serverName}`);
-    // Post confirmation to member channel
-    if (CONFIG.memberChannelId) {
-      try {
-        const memberChannel = await dmbot.channels.fetch(CONFIG.memberChannelId);
-        if (memberChannel) await memberChannel.send(`✅ Welcome DM sent to **${item.username}** from **${item.serverName}**`);
-      } catch {}
-    }
+    if (item.onResult) await item.onResult(true);
   } catch (err) {
     console.log(`⚠️ Could not DM ${item.username}: ${err.message}`);
-    // Post failure to member channel
-    if (CONFIG.memberChannelId) {
-      try {
-        const memberChannel = await dmbot.channels.fetch(CONFIG.memberChannelId);
-        if (memberChannel) await memberChannel.send(`⚠️ Could not DM **${item.username}** — DMs disabled`);
-      } catch {}
-    }
+    if (item.onResult) await item.onResult(false);
   }
 }
 
