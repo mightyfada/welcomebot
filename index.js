@@ -77,8 +77,22 @@ async function processQueue() {
       `We hope you have a great experience! 🙏`
     );
     console.log(`✅ Welcome DM sent to ${item.username} from ${item.serverName}`);
+    // Post confirmation to member channel
+    if (CONFIG.memberChannelId) {
+      try {
+        const memberChannel = await dmbot.channels.fetch(CONFIG.memberChannelId);
+        if (memberChannel) await memberChannel.send(`✅ Welcome DM sent to **${item.username}** from **${item.serverName}**`);
+      } catch {}
+    }
   } catch (err) {
     console.log(`⚠️ Could not DM ${item.username}: ${err.message}`);
+    // Post failure to member channel
+    if (CONFIG.memberChannelId) {
+      try {
+        const memberChannel = await dmbot.channels.fetch(CONFIG.memberChannelId);
+        if (memberChannel) await memberChannel.send(`⚠️ Could not DM **${item.username}** — DMs disabled`);
+      } catch {}
+    }
   }
 }
 
