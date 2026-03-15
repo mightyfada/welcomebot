@@ -1,2 +1,1 @@
-selfbot: node index.js
-dmbot: node dmbot.js
+worker: node index.js
