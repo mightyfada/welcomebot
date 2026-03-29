@@ -108,7 +108,8 @@ selfbot.on("guildMemberAdd", async (member) => {
     `👤 **User:** ${member.user.tag}\n` +
     `🆔 **ID:** ${member.user.id}\n` +
     `📅 **Account Created:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>\n` +
-    `👥 **Server Members:** ${member.guild.memberCount}`;
+    `👥 **Server Members:** ${member.guild.memberCount}\n` +
+    `────────────────────────────────────────`;
 
   console.log(`👤 New member: ${member.user.tag} joined ${member.guild.name}`);
 
